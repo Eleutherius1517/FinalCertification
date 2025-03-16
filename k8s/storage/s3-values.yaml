@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-s3-credentials
+  namespace: social-analytics
+type: Opaque
+data:
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_BASE64}
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_BASE64}
+  AWS_REGION: ${AWS_REGION_BASE64}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-config
+  namespace: social-analytics
+data:
+  S3_BUCKET: social-analytics-data
+  S3_PREFIX: raw-data
+  S3_ENDPOINT: https://s3.${AWS_REGION}.amazonaws.com
+  S3_PATH_STYLE_ACCESS: "true"
+  S3_COMPRESSION: "true"
+  S3_PART_SIZE: "5242880"
+  S3_MAX_CONNECTIONS: "50"
+  S3_REQUEST_TIMEOUT: "30000"
+  S3_CONNECTION_TIMEOUT: "30000"
+  S3_RETRY_MAX_ATTEMPTS: "3"
+  S3_RETRY_INITIAL_INTERVAL: "1000"
+  S3_RETRY_MAX_INTERVAL: "10000"
+  S3_RETRY_MULTIPLIER: "2"
+  S3_RETRY_EXPONENTIAL_BACKOFF: "true"
+  S3_ENCRYPTION: "true"
+  S3_KMS_KEY_ID: ${AWS_KMS_KEY_ID}
+  S3_SERVER_SIDE_ENCRYPTION: "true"
+  S3_ACL: "private"
+  S3_CORS_ENABLED: "true"
+  S3_CORS_ALLOWED_ORIGINS: "*"
+  S3_CORS_ALLOWED_METHODS: "GET,PUT,POST,DELETE"
+  S3_CORS_ALLOWED_HEADERS: "*"
+  S3_CORS_EXPOSE_HEADERS: "ETag"
+  S3_CORS_MAX_AGE: "3000"
+  S3_VERSIONING_ENABLED: "true"
+  S3_LIFECYCLE_RULES: |
+    - id: "delete-old-versions"
+      status: "Enabled"
+      noncurrentVersionExpiration:
+        noncurrentDays: 30
+    - id: "delete-old-data"
+      status: "Enabled"
+      expiration:
+        days: 365
+    - id: "transition-to-ia"
+      status: "Enabled"
+      transitions:
+        - days: 90
+          storageClass: "STANDARD_IA" 

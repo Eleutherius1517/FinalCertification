@@ -1,0 +1,11 @@
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\config\WebClientConfig.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\model\User.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\dto\RegisterRequest.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\service\GoogleAuthService.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\service\KeycloakService.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\dto\TokenResponse.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\client\KeycloakClient.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\AuthServiceApplication.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\config\KeycloakConfig.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\controller\AuthController.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\auth-service\src\main\java\com\socialanalytics\auth\service\TelegramAuthService.java

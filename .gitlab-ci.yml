@@ -1,0 +1,91 @@
+image: docker:20.10.16
+
+services:
+  - docker:20.10.16-dind
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: social-analytics
+  KUBERNETES_NAMESPACE: social-analytics
+
+stages:
+  - test
+  - build
+  - deploy
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - aws configure set region $AWS_REGION
+  - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+
+unit-tests:
+  stage: test
+  image: maven:3.8.4-openjdk-17
+  script:
+    - mvn test
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+integration-tests:
+  stage: test
+  image: maven:3.8.4-openjdk-17
+  services:
+    - postgres:15-alpine
+    - redis:7-alpine
+    - mongo:6
+  variables:
+    POSTGRES_DB: social_analytics_test
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    MONGO_INITDB_ROOT_USERNAME: admin
+    MONGO_INITDB_ROOT_PASSWORD: admin
+  script:
+    - mvn verify -Dspring.profiles.active=test
+  artifacts:
+    reports:
+      junit: target/failsafe-reports/TEST-*.xml
+
+build:
+  stage: build
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $ECR_REPOSITORY:$CI_COMMIT_SHA
+    - docker push $ECR_REPOSITORY:$CI_COMMIT_SHA
+  only:
+    - main
+    - develop
+
+deploy-staging:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - |
+      kubectl set image deployment/$SERVICE_NAME \
+        $SERVICE_NAME=$ECR_REPOSITORY:$CI_COMMIT_SHA \
+        -n $KUBERNETES_NAMESPACE
+  environment:
+    name: staging
+  only:
+    - develop
+
+deploy-production:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - |
+      kubectl set image deployment/$SERVICE_NAME \
+        $SERVICE_NAME=$ECR_REPOSITORY:$CI_COMMIT_SHA \
+        -n $KUBERNETES_NAMESPACE
+  environment:
+    name: production
+  when: manual
+  only:
+    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual 

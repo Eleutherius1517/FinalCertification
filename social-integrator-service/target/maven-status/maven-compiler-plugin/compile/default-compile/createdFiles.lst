@@ -1,0 +1,9 @@
+com\socialanalytics\integrator\config\RabbitMQConfig.class
+com\socialanalytics\integrator\controller\ChannelController.class
+com\socialanalytics\integrator\service\DataCollectionService.class
+com\socialanalytics\integrator\SocialIntegratorApplication.class
+com\socialanalytics\integrator\adapter\impl\TelegramAdapter.class
+com\socialanalytics\integrator\model\ChannelData.class
+com\socialanalytics\integrator\model\MessageData.class
+com\socialanalytics\integrator\adapter\SocialNetworkAdapter.class
+com\socialanalytics\integrator\model\ReactionData.class

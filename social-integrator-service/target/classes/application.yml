@@ -1,0 +1,66 @@
+server:
+  port: 8004
+
+spring:
+  application:
+    name: social-integrator-service
+  datasource:
+    url: jdbc:postgresql://postgres:5432/social_analytics
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  jackson:
+    modules:
+      - com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+      - com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+    mapper:
+      use-annotations: true
+      auto-detect-getters: true
+      auto-detect-is-getters: true
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST}
+    port: ${SPRING_RABBITMQ_PORT}
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+  cloud:
+    discovery:
+      enabled: false
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+
+rabbitmq:
+  queue:
+    channel-data: channel-data-queue
+    message-data: message-data-queue
+  exchange: social-analytics-exchange
+  routing-key:
+    channel-data: channel.data
+    message-data: message.data
+
+eureka:
+  client:
+    enabled: false
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_AUTH-SERVER-URL}
+  realm: ${KEYCLOAK_REALM}
+  resource: ${KEYCLOAK_RESOURCE}
+  credentials:
+    secret: ${KEYCLOAK_CREDENTIALS_SECRET}
+
+logging:
+  level:
+    com.socialanalytics.integrator: DEBUG
+    org.telegram.telegrambots: INFO
+    com.socialanalytics.socialintegrator: DEBUG 

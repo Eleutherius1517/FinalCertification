@@ -1,0 +1,13 @@
+com\socialanalytics\notification\config\RabbitMQConfig.class
+com\socialanalytics\notification\model\Notification.class
+com\socialanalytics\notification\service\NotificationService$1.class
+com\socialanalytics\notification\repository\NotificationPreferencesRepository.class
+com\socialanalytics\notification\service\NotificationService.class
+com\socialanalytics\notification\config\TelegramConfig.class
+com\socialanalytics\notification\repository\NotificationRepository.class
+com\socialanalytics\notification\bot\TelegramBot.class
+com\socialanalytics\notification\service\TelegramBot.class
+com\socialanalytics\notification\model\NotificationPreferences.class
+com\socialanalytics\notification\model\NotificationStatus.class
+com\socialanalytics\notification\NotificationServiceApplication.class
+com\socialanalytics\notification\model\NotificationType.class

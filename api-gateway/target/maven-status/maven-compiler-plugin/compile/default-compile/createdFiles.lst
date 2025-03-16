@@ -1,0 +1,6 @@
+com\socialanalytics\gateway\config\JwtConfig.class
+com\socialanalytics\gateway\config\ErrorConfig.class
+com\socialanalytics\gateway\config\RateLimiterConfig.class
+com\socialanalytics\gateway\config\LoggingConfig.class
+com\socialanalytics\ApiGatewayApplication.class
+com\socialanalytics\gateway\config\GatewayConfig.class

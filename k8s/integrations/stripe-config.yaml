@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stripe-config
+  namespace: social-analytics
+data:
+  STRIPE_API_VERSION: "2023-10-16"
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+  STRIPE_WEBHOOK_ENDPOINT: "/api/payment/webhook"
+  STRIPE_SUCCESS_URL: "https://social-analytics.com/payment/success"
+  STRIPE_CANCEL_URL: "https://social-analytics.com/payment/cancel"
+  STRIPE_PRODUCTS: |
+    - id: "free"
+      name: "Free Plan"
+      price: "0"
+      features: ["basic_analytics", "limited_channels"]
+    - id: "pro"
+      name: "Pro Plan"
+      price: "29.99"
+      features: ["advanced_analytics", "unlimited_channels", "priority_support"]
+    - id: "enterprise"
+      name: "Enterprise Plan"
+      price: "99.99"
+      features: ["advanced_analytics", "unlimited_channels", "priority_support", "custom_integrations"]
+  STRIPE_TAX_RATE: "0.20"
+  STRIPE_CURRENCY: "USD"
+  STRIPE_PAYMENT_METHODS: "card,sepa_debit"
+  STRIPE_INVOICE_PREFIX: "SA"
+  STRIPE_INVOICE_DESCRIPTION: "Social Analytics Subscription"
+  STRIPE_ENABLE_LOGGING: "true"
+  STRIPE_LOG_LEVEL: "INFO"
+  STRIPE_ENABLE_METRICS: "true"
+  STRIPE_METRICS_PREFIX: "stripe"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stripe-credentials
+  namespace: social-analytics
+type: Opaque
+data:
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY_BASE64}
+  STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY_BASE64}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET_BASE64} 

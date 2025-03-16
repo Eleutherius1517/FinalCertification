@@ -1,0 +1,11 @@
+com\socialanalytics\auth\dto\RegisterRequest.class
+com\socialanalytics\auth\service\GoogleAuthService.class
+com\socialanalytics\auth\client\KeycloakClient.class
+com\socialanalytics\auth\service\KeycloakService.class
+com\socialanalytics\auth\dto\TokenResponse.class
+com\socialanalytics\auth\controller\AuthController.class
+com\socialanalytics\auth\config\WebClientConfig.class
+com\socialanalytics\auth\service\TelegramAuthService.class
+com\socialanalytics\auth\config\KeycloakConfig.class
+com\socialanalytics\auth\model\User.class
+com\socialanalytics\auth\AuthServiceApplication.class

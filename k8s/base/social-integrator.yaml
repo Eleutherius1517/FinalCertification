@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-integrator
+  namespace: social-analytics
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: social-integrator
+  template:
+    metadata:
+      labels:
+        app: social-integrator
+    spec:
+      containers:
+      - name: social-integrator
+        image: social-analytics/social-integrator:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: KAFKA_TOPIC_RAW_DATA
+          value: "raw-data"
+        - name: REDIS_HOST
+          value: "redis-master"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: BATCH_SIZE
+          value: "100"
+        - name: POLLING_INTERVAL
+          value: "60"
+        - name: RATE_LIMIT_REQUESTS
+          value: "30"
+        - name: RATE_LIMIT_PERIOD
+          value: "1"
+        - name: RETRY_ATTEMPTS
+          value: "3"
+        - name: RETRY_DELAY
+          value: "1000"
+        envFrom:
+        - secretRef:
+            name: social-credentials
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 5
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: social-integrator-hpa
+  namespace: social-analytics
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: social-integrator
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Service
+metadata:
+  name: social-integrator
+  namespace: social-analytics
+spec:
+  selector:
+    app: social-integrator
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP 

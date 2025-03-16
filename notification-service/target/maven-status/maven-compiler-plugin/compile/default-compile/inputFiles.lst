@@ -1,0 +1,13 @@
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\config\RabbitMQConfig.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\model\NotificationPreferences.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\service\NotificationService.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\repository\NotificationPreferencesRepository.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\service\TriggerService.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\service\TelegramBot.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\bot\TelegramBot.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\NotificationServiceApplication.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\model\NotificationStatus.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\model\Notification.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\model\NotificationType.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\repository\NotificationRepository.java
+C:\Users\Пользователь\Desktop\HomeWorks\DipWorks\notification-service\src\main\java\com\socialanalytics\notification\config\TelegramConfig.java

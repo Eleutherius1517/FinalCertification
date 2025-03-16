@@ -1,0 +1,78 @@
+elasticsearch:
+  imageTag: "8.11.1"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+  volumeClaimTemplate:
+    resources:
+      requests:
+        storage: 100Gi
+    storageClassName: standard
+  config:
+    cluster.name: social-analytics
+    discovery.type: single-node
+    xpack.security.enabled: true
+    xpack.monitoring.enabled: true
+    xpack.ml.enabled: true
+    indices.memory.index_buffer_size: 30%
+    bootstrap.memory_lock: true
+
+kibana:
+  imageTag: "8.11.1"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+  config:
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://elasticsearch-master:9200"]
+    xpack.security.enabled: true
+    xpack.monitoring.enabled: true
+    xpack.ml.enabled: true
+
+logstash:
+  imageTag: "8.11.1"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+  config:
+    input {
+      beats {
+        port => 5044
+      }
+      tcp {
+        port => 5000
+      }
+      udp {
+        port => 5000
+      }
+    }
+    filter {
+      if [type] == "spring" {
+        grok {
+          match => { "message" => "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}" }
+        }
+        date {
+          match => [ "timestamp", "ISO8601" ]
+          target => "@timestamp"
+        }
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch-master:9200"]
+        index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+      }
+    } 

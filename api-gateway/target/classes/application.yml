@@ -1,0 +1,43 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: api-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/social-analytics
+          jwk-set-uri: http://keycloak:8080/realms/social-analytics/protocol/openid-connect/certs
+  cloud:
+    discovery:
+      enabled: false
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/api/auth/**
+        - id: data-processing-service
+          uri: http://data-processing-service:8002
+          predicates:
+            - Path=/api/data/**
+        - id: notification-service
+          uri: http://notification-service:8003
+          predicates:
+            - Path=/api/notifications/**
+        - id: social-integrator-service
+          uri: http://social-integrator-service:8004
+          predicates:
+            - Path=/api/social/**
+
+eureka:
+  client:
+    enabled: false
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: INFO
+    reactor.ipc.netty: DEBUG 

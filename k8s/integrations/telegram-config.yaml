@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegram-config
+  namespace: social-analytics
+data:
+  TELEGRAM_API_URL: "https://api.telegram.org/bot"
+  TELEGRAM_BOT_USERNAME: "Social_analitic_777_bot"
+  TELEGRAM_WEBHOOK_URL: "https://api.social-analytics.com/api/social/telegram/webhook"
+  TELEGRAM_MAX_CONNECTIONS: "40"
+  TELEGRAM_RETRY_ATTEMPTS: "3"
+  TELEGRAM_RETRY_DELAY: "1000"
+  TELEGRAM_RATE_LIMIT_REQUESTS: "30"
+  TELEGRAM_RATE_LIMIT_PERIOD: "1"
+  TELEGRAM_BATCH_SIZE: "100"
+  TELEGRAM_POLLING_INTERVAL: "1000"
+  TELEGRAM_TIMEOUT: "30000"
+  TELEGRAM_PROXY_ENABLED: "false"
+  TELEGRAM_PROXY_HOST: ""
+  TELEGRAM_PROXY_PORT: ""
+  TELEGRAM_PROXY_USERNAME: ""
+  TELEGRAM_PROXY_PASSWORD: ""
+  TELEGRAM_LOGGING_LEVEL: "INFO"
+  TELEGRAM_ENABLE_METRICS: "true"
+  TELEGRAM_METRICS_PREFIX: "telegram_bot"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: telegram-credentials
+  namespace: social-analytics
+type: Opaque
+data:
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN_BASE64}
+  TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET_BASE64} 
