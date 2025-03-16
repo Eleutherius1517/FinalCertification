@@ -235,11 +235,6 @@ Frontend → API Gateway → Auth Service → Analytics Service → Data Process
       /10/
         messages.json
         metadata.json
-  /twitter/
-    /2023/
-      /10/
-        tweets.json
-        metrics.json
 /processed-data/
   /analytics/
     /daily/
