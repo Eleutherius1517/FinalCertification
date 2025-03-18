@@ -167,6 +167,13 @@ services:
       - mongodb
       - rabbitmq
       - keycloak
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   notification-service:
     build: ./notification-service
@@ -220,6 +227,8 @@ services:
       REACT_APP_KEYCLOAK_URL: http://localhost:8080
       REACT_APP_KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       REACT_APP_KEYCLOAK_CLIENT_ID: frontend
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME}
     depends_on:
       - api-gateway
       - keycloak
@@ -229,4 +238,4 @@ volumes:
   mongodb_data:
   redis_data:
   prometheus_data:
-  grafana_data: 
+  grafana_data:

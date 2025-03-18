@@ -36,8 +36,8 @@ spring:
 
 telegram:
   bot:
-    token: ${TELEGRAM_BOT_TOKEN}
-    username: ${TELEGRAM_BOT_USERNAME}
+    token: 7856596907:AAExlyel8EPx2BxHmOicwEh_m_mm_a9ZSUo
+    username: '@Social_analitic_777_bot'
 
 rabbitmq:
   queue:

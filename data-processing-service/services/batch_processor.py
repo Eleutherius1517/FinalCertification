@@ -9,7 +9,11 @@ class BatchProcessor:
     def __init__(self):
         self.spark = SparkSession.builder \
             .appName("SocialAnalyticsBatchProcessor") \
-            .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0") \
+            .config("spark.jars", "/opt/spark/jars/spark-rabbitmq-0.5.1.jar") \
+            .config("spark.rabbitmq.host", "rabbitmq") \
+            .config("spark.rabbitmq.port", "5672") \
+            .config("spark.rabbitmq.username", "admin") \
+            .config("spark.rabbitmq.password", "admin123") \
             .getOrCreate()
         
         # Создание временных представлений
@@ -19,12 +23,11 @@ class BatchProcessor:
         """
         Создание временных представлений для работы с данными
         """
-        # Чтение данных из Kafka
+        # Чтение данных из RabbitMQ
         messages_df = self.spark \
             .readStream \
-            .format("kafka") \
-            .option("kafka.bootstrap.servers", "kafka:9092") \
-            .option("subscribe", "social-messages") \
+            .format("rabbitmq") \
+            .option("rabbitmq.queue.name", "social-messages") \
             .load() \
             .selectExpr("CAST(value AS STRING) as value") \
             .selectExpr("from_json(value, 'message_id STRING, channel_id STRING, content STRING, engagement INT, timestamp TIMESTAMP') as data") \

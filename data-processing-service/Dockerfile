@@ -10,10 +10,12 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /build
 
 # Копируем файлы зависимостей
-COPY requirements.txt .
+#COPY requirements.txt .
 
 # Установка зависимостей
-RUN pip3 install --no-cache-dir -r requirements.txt
+#RUN pip3 install --no-cache-dir -r requirements.txt
+
+
 
 # Этап выполнения
 FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
@@ -26,7 +28,22 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Создаем непривилегированного пользователя
+# Копируем файлы зависимостей
+COPY requirements.txt .
+
+# Установка зависимостей
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH=$PATH:$JAVA_HOME/bin
+RUN mkdir -p /home/app/.ivy2/cache && \
+    chmod -R 777 /home/app/.ivy2
+RUN pip3 install --no-cache-dir -r requirements.txt
+RUN apt-get update && apt-get install -y openjdk-11-jdk
+
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /opt/spark/jars
+RUN wget https://repo1.maven.org/maven2/com/stratio/receiver/spark-rabbitmq/0.5.1/spark-rabbitmq-0.5.1.jar -O /opt/spark/jars/spark-rabbitmq-0.5.1.jar
+#COPY spark-rabbitmq-0.5.1.jar /opt/spark/jars/spark-rabbitmq-0.5.1.jar
+RUN chmod -R 755 /opt/spark/jars
 RUN groupadd -r app && useradd -r -g app app
 
 # Копируем зависимости из этапа сборки
@@ -52,4 +69,4 @@ ENV PYTHONUNBUFFERED=1 \
     FLASK_ENV=production
 
 # Запускаем приложение
-CMD ["python3", "app.py"] 
+CMD ["python3", "app.py"]

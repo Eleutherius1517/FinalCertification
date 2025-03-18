@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer, KafkaProducer
+import pika
 import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
@@ -7,51 +7,47 @@ import time
 
 class RealtimeProcessor:
     def __init__(self):
-        self.consumer = KafkaConsumer(
-            'social-messages',
-            bootstrap_servers=['kafka:9092'],
-            group_id='realtime-processor',
-            auto_offset_reset='latest',
-            value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+        # RabbitMQ connection
+        credentials = pika.PlainCredentials('admin', 'admin123')
+        parameters = pika.ConnectionParameters(
+            host='rabbitmq',
+            port=5672,
+            credentials=credentials
         )
+        self.connection = pika.BlockingConnection(parameters)
+        self.channel = self.connection.channel()
         
-        self.producer = KafkaProducer(
-            bootstrap_servers=['kafka:9092'],
-            value_serializer=lambda x: json.dumps(x).encode('utf-8')
-        )
+        # Declare queues
+        self.channel.queue_declare(queue='social-messages')
+        self.channel.queue_declare(queue='realtime-analytics')
         
-        self.window_size = 300  # 5 минут в секундах
+        # Message handling setup
+        self.window_size = 300  # 5 minutes in seconds
         self.message_buffer: List[Dict[str, Any]] = []
         self.hashtag_counts: Dict[str, int] = {}
         self.mention_counts: Dict[str, int] = {}
         
-        # Запуск обработки в отдельном потоке
+        # Start processing in separate thread
         self.processing_thread = threading.Thread(target=self._process_messages)
         self.processing_thread.daemon = True
         self.processing_thread.start()
 
+
     def _process_messages(self):
         """
-        Обработка сообщений в реальном времени
+        Process messages in real-time
         """
-        while True:
-            try:
-                # Получение сообщений из Kafka
-                message_pack = self.consumer.poll(timeout_ms=1000)
-                
-                for topic_partition, messages in message_pack.items():
-                    for message in messages:
-                        self._process_single_message(message.value)
-                
-                # Очистка устаревших данных
-                self._cleanup_old_data()
-                
-                # Отправка агрегированных данных
-                self._send_aggregated_data()
-                
-            except Exception as e:
-                print(f"Ошибка при обработке сообщений: {str(e)}")
-                time.sleep(1)
+        def callback(ch, method, properties, body):
+            message = json.loads(body.decode())
+            self._process_single_message(message)
+            
+        self.channel.basic_consume(
+            queue='social-messages',
+            on_message_callback=callback,
+            auto_ack=True
+        )
+        self.channel.start_consuming()
+
 
     def _process_single_message(self, message: Dict[str, Any]):
         """
@@ -106,20 +102,15 @@ class RealtimeProcessor:
 
     def _send_aggregated_data(self):
         """
-        Отправка агрегированных данных
+        Send aggregated data
         """
         current_time = datetime.utcnow()
         
-        # Подсчет общей активности
-        total_engagement = sum(msg['message'].get('engagement', 0) for msg in self.message_buffer)
-        message_count = len(self.message_buffer)
-        
-        # Формирование отчета
         report = {
             'timestamp': current_time.isoformat(),
             'window_size': self.window_size,
-            'total_engagement': total_engagement,
-            'message_count': message_count,
+            'total_engagement': sum(msg['message'].get('engagement', 0) for msg in self.message_buffer),
+            'message_count': len(self.message_buffer),
             'top_hashtags': sorted(
                 self.hashtag_counts.items(),
                 key=lambda x: x[1],
@@ -132,9 +123,11 @@ class RealtimeProcessor:
             )[:10]
         }
         
-        # Отправка отчета в Kafka
-        self.producer.send('realtime-analytics', report)
-        self.producer.flush()
+        self.channel.basic_publish(
+            exchange='',
+            routing_key='realtime-analytics',
+            body=json.dumps(report)
+        )
 
     def get_current_metrics(self) -> Dict[str, Any]:
         """
